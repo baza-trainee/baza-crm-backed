@@ -3,7 +3,9 @@ import { Project } from '../project.entity';
 import { Tag } from '../../tag/tag.entity';
 @Entity()
 export class ProjectRequirment {
-  @ManyToOne(() => Project, (project) => project.projectRequirments)
+  @ManyToOne(() => Project, (project) => project.projectRequirments, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'projectId' })
   project!: Project;
   @PrimaryColumn()

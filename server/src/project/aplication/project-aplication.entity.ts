@@ -7,7 +7,7 @@ import { ProjectAplicationState } from './project-aplication.enums';
 export class ProjectAplication {
   @PrimaryGeneratedColumn()
   id!: number;
-  @ManyToOne(() => Project, (project) => project.projectAplications)
+  @ManyToOne(() => Project, (project) => project.projectAplications, {onDelete:'CASCADE'})
   @JoinColumn({ name: 'projectId' })
   project!: Project;
   @PrimaryColumn()

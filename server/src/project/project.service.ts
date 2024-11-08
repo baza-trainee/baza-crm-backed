@@ -68,3 +68,12 @@ export const finishProject = async (projectId: number) => {
   await addUserPoints(project);
   await sendKarmaReviewLinks(projectId);
 };
+
+export const deleteProject = async (projectId: number) => {
+  const project = await findProjectById(projectId);
+  console.log(project);
+  if (project.projectStatus !== ProjectStatuses.IN_SEARCH) {
+    throw new Error('Can`t delete project in this state');
+  }
+  await projectRepository.delete({ id: project.id });
+};

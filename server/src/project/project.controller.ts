@@ -39,6 +39,11 @@ const endProject = async (req: Request, res: Response) => {
   res.json({ status: true });
 };
 
+const deleteProject = async (req: Request, res: Response) => {
+  await projectService.deleteProject(Number(req.params.projectId));
+  res.json({ status: true });
+};
+
 export default {
   createProject: controllerWrapper(createProject),
   updateProject: controllerWrapper(updateProject),
@@ -46,4 +51,5 @@ export default {
   findAllProject: controllerWrapper(findAllProject),
   findProjectById: controllerWrapper(findProjectById),
   endProject: controllerWrapper(endProject),
+  deleteProject: controllerWrapper(deleteProject),
 };

@@ -253,6 +253,30 @@ projectRouter.post(
   projectController.endProject,
 );
 
+/**
+ * @openapi
+ * /project/{projectId}:
+ *   delete:
+ *     summary: Delete project
+ *     tags: [Project]
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - jwtheader: []
+ *     responses:
+ *       200:
+ *         description: Ok
+ */
+projectRouter.delete(
+  '/:projectId',
+  validator({ params: projectSchemas.projectIdParamSchema }),
+  projectController.deleteProject,
+);
+
 projectRouter.use('/:projectId/requirment/:tagId', projectRequirmentRouter);
 
 export default ['project', projectRouter];

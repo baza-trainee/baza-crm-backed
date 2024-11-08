@@ -3,7 +3,9 @@ import { Project } from '../project/project.entity';
 import { User } from '../user/user.entity';
 @Entity()
 export class Karma {
-  @ManyToOne(() => Project, (project) => project.projectRequirments)
+  @ManyToOne(() => Project, (project) => project.projectRequirments, {
+    onDelete: 'CASCADE',
+  })
   project!: Project;
   @PrimaryColumn()
   projectId!: number;

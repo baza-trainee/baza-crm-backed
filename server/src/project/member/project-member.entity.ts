@@ -11,7 +11,7 @@ import { Tag } from '../../tag/tag.entity';
 import { User } from '../../user/user.entity';
 @Entity()
 export class ProjectMember {
-  @ManyToOne(() => Project, (project) => project.projectMember)
+  @ManyToOne(() => Project, (project) => project.projectMember,{onDelete:'CASCADE'})
   @JoinColumn({ name: 'projectId' })
   project!: Project;
   @PrimaryColumn()
