@@ -33,7 +33,7 @@ export const sendRegisterEmail = async (email: string) => {
   const letter = {
     to: email,
     subject: 'Register link',
-    html: `<a href='${BASE_FRONT_URL}auth/register?code=${jwt}'> Link </a>`,
+    html: `<a href='${BASE_FRONT_URL}register?code=${jwt}'> Link </a>`,
   };
   try {
     const result = await sendEmail(letter);
