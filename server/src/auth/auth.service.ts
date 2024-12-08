@@ -2,8 +2,15 @@ import bcrypt from 'bcrypt';
 import * as userServices from '../user/user.service';
 import * as tagService from '../tag/tag.service';
 import * as userRequestService from '../user-request/user-request.service';
-import { signJWT } from '../jwt/jwt.service';
+import { signJWT, verifyJWT } from '../jwt/jwt.service';
 import getConfigValue from '../config/config';
+import {
+  deleteOtpCode,
+  findOtpCode,
+  generateChangePassOtpCode,
+} from '../otp/otp.service';
+import { sendChangePasswordLink } from '../discord/discord';
+import { OtpType } from '../otp/otp.types';
 
 const SALT = getConfigValue('SALT');
 
@@ -59,4 +66,31 @@ export const userLogin = async (email: string, password: string) => {
 
 export const getMe = async (id: number) => {
   return await userServices.findByIdWithTags(id);
+};
+
+export const changePasswordRequest = async (email: string) => {
+  const user = await userServices.findByEmail(email);
+  const otpCode = await generateChangePassOtpCode(user);
+  const payload: any = {};
+
+  payload.email = email;
+  payload.code = otpCode;
+
+  const jwt = signJWT(payload, '24h');
+
+  if (!user.discord) return;
+  await sendChangePasswordLink(user.discord, jwt);
+};
+
+export const changePasswordConfirm = async (code: string, password: string) => {
+  const payload = verifyJWT(code);
+  const user = await userServices.findByEmail(payload.email);
+  const otp = await findOtpCode(payload.code, OtpType.ChangePassword);
+  console.log(otp)
+  if (otp.user.email !== user.email) throw new Error('Wrong user');
+  const hashPassword = await bcrypt.hash(password, SALT);
+  user.password = hashPassword;
+  await userServices.saveUser(user);
+  await deleteOtpCode(otp.code, OtpType.ChangePassword);
+  // TODO change system to sessions and clear old sessions
 };

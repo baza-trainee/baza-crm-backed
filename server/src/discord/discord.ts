@@ -143,7 +143,36 @@ const initNewChannel = async (guild: Guild) => {
 
 export const sendKarmaReviewLink = async (userId: string, code: string) => {
   const user = await client.users.fetch(String(userId));
-  await user.send(getConfigValue('BASE_FRONT_URL') + 'evaluating?data=' + code);
+
+  const button = new ButtonBuilder()
+    .setLabel('Authorize')
+    .setURL(
+      `${getConfigValue('BASE_FRONT_URL') + 'crm/evaluating?data=' + code}`,
+    )
+    .setStyle(ButtonStyle.Link);
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+  await user.send({
+    content: `Press the button below to set karmas`,
+    components: [row],
+  });
+};
+
+export const sendChangePasswordLink = async (userId: string, code: string) => {
+  const user = await client.users.fetch(String(userId));
+
+  const button = new ButtonBuilder()
+    .setLabel('Authorize')
+    .setURL(
+      `${
+        getConfigValue('BASE_FRONT_URL') + 'auth/changepassword?data=' + code
+      }`,
+    )
+    .setStyle(ButtonStyle.Link);
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+  await user.send({
+    content: `Press the button below to change password`,
+    components: [row],
+  });
 };
 
 // const sendUsersInvitations = async (guildId: string, userId: string) => {

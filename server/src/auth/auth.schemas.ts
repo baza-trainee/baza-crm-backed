@@ -13,3 +13,7 @@ export const loginUserSchema = Joi.object().keys({
 export const confirmCodeSchema = Joi.object().keys({
   code: Joi.string().required(),
 });
+
+export const changePasswordRequestSchema = Joi.object().keys({
+  email: Joi.string().required(),
+});

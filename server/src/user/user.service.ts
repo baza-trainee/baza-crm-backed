@@ -103,3 +103,7 @@ export const addUserPoints = async (project: Project) => {
   );
   await userRepository.save(users);
 };
+
+export const saveUser = async (user: User) => {
+  await userRepository.save(user);
+};

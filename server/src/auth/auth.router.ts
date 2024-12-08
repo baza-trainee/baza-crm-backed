@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import validator from '../validator/validator';
 import {
+  changePasswordRequestSchema,
   confirmCodeSchema,
   createUserSchema,
   loginUserSchema,
@@ -120,5 +121,65 @@ authRouter.post(
  *         description: Ok
  */
 authRouter.post('/me', getUserJWT, authController.getMe);
+
+/**
+ * @openapi
+ * /auth/changepassword:
+ *   post:
+ *     summary: Change password request
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 required: true
+ *             example:
+ *               email: admin@gmail.com
+ *     responses:
+ *       200:
+ *         description: Ok
+ */
+authRouter.post(
+  '/changepassword',
+  validator({ body: changePasswordRequestSchema }),
+  authController.changePassword,
+);
+
+/**
+ * @openapi
+ * /auth/changepasswordconfirm:
+ *   post:
+ *     summary: Change password confirm
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 required: true
+ *               code:
+ *                 type: string
+ *                 required: true
+ *             example:
+ *               password: Test1234
+ *               code: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+ *     responses:
+ *       200:
+ *         description: Ok
+ */
+authRouter.post(
+  '/changepasswordconfirm',
+  validator({ body: createUserSchema }),
+  authController.changePasswordConfirm,
+);
 
 export default ['auth', authRouter];

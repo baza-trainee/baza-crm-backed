@@ -12,7 +12,6 @@ const register = async (req: Request, res: Response) => {
   if (typeof code === 'string') return;
   const email = code.email;
   await existByEmail(email);
-  console.log(email)
   const data = await getByEmail(email);
   const newUser = await authService.userRegistration(email, password);
   res.status(201).json('Success');
@@ -43,9 +42,23 @@ const confirmRegisterCode = async (req: Request, res: Response) => {
   return res.json({ data: returnedData });
 };
 
+const changePassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  await authService.changePasswordRequest(email);
+  return res.json({ status: true });
+};
+
+const changePasswordConf = async (req: Request, res: Response) => {
+  const { code, password } = req.body;
+  await authService.changePasswordConfirm(code, password);
+  return res.json({ status: true });
+};
+
 export default {
   register: controllerWrapper(register),
   login: controllerWrapper(login),
   getMe: controllerWrapper(getMe),
   confirmRegisterCode: controllerWrapper(confirmRegisterCode),
+  changePassword: controllerWrapper(changePassword),
+  changePasswordConfirm: controllerWrapper(changePasswordConf),
 };
