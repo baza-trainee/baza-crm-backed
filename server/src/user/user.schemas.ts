@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { User } from './user.entity';
+import { UserStatus } from './user.enum';
 
 export const getUserByIdParamSchema = Joi.object().keys({
   id: Joi.number().required(),
@@ -13,6 +14,9 @@ export const updateUserSchema = Joi.object<User>().keys({
   firstName: Joi.string().optional(),
   lastName: Joi.string().optional(),
   phone: Joi.string().optional(),
+  status: Joi.string()
+  .valid(...Object.values(UserStatus))
+  .required(),
 });
 
 export const linkDiscordSchema = Joi.object().keys({
