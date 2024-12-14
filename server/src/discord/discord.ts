@@ -164,7 +164,7 @@ export const sendChangePasswordLink = async (userId: string, code: string) => {
     .setLabel('Authorize')
     .setURL(
       `${
-        getConfigValue('BASE_FRONT_URL') + 'auth/changepassword?data=' + code
+        getConfigValue('BASE_FRONT_URL') + 'reset-password/?data=' + code
       }`,
     )
     .setStyle(ButtonStyle.Link);
