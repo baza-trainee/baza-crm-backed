@@ -89,7 +89,7 @@ const sendUserAuthButton = async (userId: string) => {
   const button = new ButtonBuilder()
     .setLabel('Authorize')
     .setURL(
-      `${getConfigValue('BASE_URL')}/user/discord/?code=${signJWT(
+      `${getConfigValue('BASE_FRONT_URL')}crm/connect-to-discord?token=${signJWT(
         { code, discordId: userId },
         '24h',
       )}`,
