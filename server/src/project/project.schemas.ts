@@ -42,3 +42,8 @@ export const updateProjectStatusSchema = Joi.object({
     .valid(...Object.values(ProjectStatuses))
     .required(),
 });
+
+export const discordLinkSchema = Joi.object({
+  guildId: Joi.string().required(),
+  projectId: Joi.string().required(),
+});

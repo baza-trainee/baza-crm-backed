@@ -23,6 +23,7 @@ interface IConfig {
   DB_PASS: string;
   DB_DATABASE: string;
   DB_HOST: string;
+  GUILD_OWNER_ID: string;
 }
 
 const envSchema = Joi.object<IConfig>({
@@ -33,6 +34,7 @@ const envSchema = Joi.object<IConfig>({
   BASE_FRONT_URL: Joi.string().uri().required(),
   DISCORD_BOT_TOKEN: Joi.string().required(),
   GUILD_DISCORD_ID: Joi.string().required(),
+  GUILD_OWNER_ID: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
   SALT: Joi.number().required(),
   SMTP_SECURE: Joi.boolean().required(),

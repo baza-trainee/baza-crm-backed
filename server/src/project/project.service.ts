@@ -77,3 +77,17 @@ export const deleteProject = async (projectId: number) => {
   }
   await projectRepository.delete({ id: project.id });
 };
+
+export const linkDiscord = async (projectId: number, guildId: string) => {
+  const project = await findProjectById(projectId);
+  project.discord = guildId;
+  await projectRepository.save(project);
+};
+
+export const findProjectByDiscordId = async (guildId: string) => {
+  const project = await projectRepository.findOne({
+    where: { discord: guildId },
+    relations: { projectMember: { tag: true, user: true } },
+  });
+  return project;
+};

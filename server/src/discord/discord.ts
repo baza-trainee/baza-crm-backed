@@ -11,6 +11,8 @@ import {
 import getConfigValue from '../config/config';
 import { createDiscordLinkOtpCode } from '../otp/otp.service';
 import { signJWT } from '../jwt/jwt.service';
+import { findProjectByDiscordId } from '../project/project.service';
+import { getAllTags } from '../tag/tag.service';
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -23,13 +25,20 @@ const client = new Client({
 });
 
 const mainGuildId = getConfigValue('GUILD_DISCORD_ID');
+const guildsOwnerId = getConfigValue('GUILD_OWNER_ID');
 
 const roles = [
   { name: 'Back', color: '0000ff' },
   { name: 'Front', color: 'ff0000' },
   { name: 'Design', color: 'ffa500' },
   { name: 'Qa', color: 'ffff00' },
+  { name: 'virtual', color: 'ffa678' },
 ];
+
+const getAllRoles = async () => {
+  const tags = await getAllTags();
+  return tags.map((el) => ({ name: el.name, color: el.color }));
+};
 
 const parentChannels = ['Текстові канали', 'Голосові канали'];
 const channels = [
@@ -48,7 +57,7 @@ const voiceChannels = [
   'Кімната 4',
 ];
 
-const addRolesToUser = async (
+/* const addRolesToUser = async (
   roleName: string,
   userId: string,
   guildId: string,
@@ -69,7 +78,7 @@ const addRolesToUser = async (
     throw new Error('User not found');
   }
   await user.roles.add(role);
-};
+}; */
 
 const kickUser = async (userId: string, guildId: string) => {
   const guild = await client.guilds.cache.find((el) => el.id == guildId);
@@ -89,7 +98,9 @@ const sendUserAuthButton = async (userId: string) => {
   const button = new ButtonBuilder()
     .setLabel('Authorize')
     .setURL(
-      `${getConfigValue('BASE_FRONT_URL')}crm/connect-to-discord?token=${signJWT(
+      `${getConfigValue(
+        'BASE_FRONT_URL',
+      )}crm/connect-to-discord?token=${signJWT(
         { code, discordId: userId },
         '24h',
       )}`,
@@ -105,16 +116,18 @@ const sendUserAuthButton = async (userId: string) => {
   });
 };
 
+const createRole = async (guild: Guild, name: string, color: string) => {
+  await guild.roles.create({ color: `#${color}`, name });
+};
+
 const initNewChannel = async (guild: Guild) => {
   if (!(guild instanceof Guild)) return;
   const avaliableRoles: string[] = [];
   guild.roles.cache.forEach((el) => avaliableRoles.push(el.name));
+  const roles = await getAllRoles();
   roles.forEach(async (el) => {
     if (avaliableRoles.includes(el.name)) return;
-    await guild.roles.create({ color: `#${el.color}`, name: el.name });
-  });
-  guild.channels.cache.forEach(async (el) => {
-    await el.delete();
+    await createRole(guild, el.name, el.color);
   });
   const parentTextChannel = await guild.channels.create({
     type: ChannelType.GuildCategory,
@@ -163,9 +176,7 @@ export const sendChangePasswordLink = async (userId: string, code: string) => {
   const button = new ButtonBuilder()
     .setLabel('Authorize')
     .setURL(
-      `${
-        getConfigValue('BASE_FRONT_URL') + 'reset-password/?data=' + code
-      }`,
+      `${getConfigValue('BASE_FRONT_URL') + 'reset-password/?data=' + code}`,
     )
     .setStyle(ButtonStyle.Link);
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
@@ -200,16 +211,30 @@ client.on('messageCreate', async (ctx) => {
   if (ctx.content.startsWith('/start')) {
     await sendUserAuthButton(ctx.author.id);
   }
-  console.log(ctx);
 });
 
-client.on('guildMemberAdd', async (member) => {
-  await sendUserAuthButton(member.id);
+client.on('guildMemberAdd', async (guildMember) => {
+  const guildId = guildMember.guild.id;
+  if (guildId === mainGuildId) return;
+  const userId = guildMember.id;
+  const project = await findProjectByDiscordId(guildId);
+  if (!project) return;
+  const member = project.projectMember.find((el) => el.user.discord == userId);
+  if (!member) return;
+  let role = guildMember.guild.roles.cache.find(
+    (el) => el.name.toLowerCase() === member?.tag.name.toLowerCase(),
+  );
+  if (!role) {
+    await createRole(guildMember.guild, member.tag.name, member.tag.color);
+  }
+  if (!role) return;
+  await guildMember.roles.add(role);
 });
 
 client.on('guildCreate', async (guild) => {
   console.log(guild.name + ' connected');
   if (guild.id == mainGuildId) return;
+  // if (guild.ownerId !== guildsOwnerId) await guild.leave();
   await initNewChannel(guild);
 });
 

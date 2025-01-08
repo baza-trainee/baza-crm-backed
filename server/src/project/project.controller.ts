@@ -44,6 +44,14 @@ const deleteProject = async (req: Request, res: Response) => {
   res.json({ status: true });
 };
 
+const discordLinkCallback = async (req: Request, res: Response) => {
+  await projectService.linkDiscord(
+    Number(req.query.projectId),
+    String(req.query.guildId),
+  );
+  res.json({ status: true });
+};
+
 export default {
   createProject: controllerWrapper(createProject),
   updateProject: controllerWrapper(updateProject),
@@ -52,4 +60,5 @@ export default {
   findProjectById: controllerWrapper(findProjectById),
   endProject: controllerWrapper(endProject),
   deleteProject: controllerWrapper(deleteProject),
+  discordLinkCallback: controllerWrapper(discordLinkCallback),
 };

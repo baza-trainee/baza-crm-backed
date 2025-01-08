@@ -56,4 +56,7 @@ export class Project {
 
   @OneToMany(() => Karma, (karma) => karma.project)
   projectKarmas!: Karma[];
+
+  @Column({ nullable: true })
+  discord?: string;
 }

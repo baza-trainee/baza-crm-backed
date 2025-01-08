@@ -197,7 +197,7 @@ projectRouter.patch(
  *                   type: stirng
  *               documents:
  *                 type: array
- *                 items: 
+ *                 items:
  *                   type: object
  *                   properties:
  *                     name:
@@ -275,6 +275,38 @@ projectRouter.delete(
   '/:projectId',
   validator({ params: projectSchemas.projectIdParamSchema }),
   projectController.deleteProject,
+);
+
+
+/**
+ * @openapi
+ * /project/dicordCallback:
+ *   post:
+ *     summary: Callback for link discord channel with project
+ *     tags: [Project]
+ *     parameters:
+ *       - in: query
+ *         name: guildId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Discord channel id
+ *       - in: query
+ *         name: projectId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Project id
+ *     security:
+ *       - jwtheader: []
+ *     responses:
+ *       200:
+ *         description: Ok
+ */
+projectRouter.post(
+  '/dicordCallback',
+  validator({ query: projectSchemas.discordLinkSchema }),
+  projectController.discordLinkCallback,
 );
 
 projectRouter.use('/:projectId/requirment/:tagId', projectRequirmentRouter);
