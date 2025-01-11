@@ -7,6 +7,7 @@ import {
   ButtonBuilder,
   ActionRowBuilder,
   ButtonStyle,
+  Colors,
 } from 'discord.js';
 import getConfigValue from '../config/config';
 import { createDiscordLinkOtpCode } from '../otp/otp.service';
@@ -26,14 +27,6 @@ const client = new Client({
 
 const mainGuildId = getConfigValue('GUILD_DISCORD_ID');
 const guildsOwnerId = getConfigValue('GUILD_OWNER_ID');
-
-const roles = [
-  { name: 'Back', color: '0000ff' },
-  { name: 'Front', color: 'ff0000' },
-  { name: 'Design', color: 'ffa500' },
-  { name: 'Qa', color: 'ffff00' },
-  { name: 'virtual', color: 'ffa678' },
-];
 
 const getAllRoles = async () => {
   const tags = await getAllTags();
@@ -117,7 +110,11 @@ const sendUserAuthButton = async (userId: string) => {
 };
 
 const createRole = async (guild: Guild, name: string, color: string) => {
-  await guild.roles.create({ color: color ? color : [255, 255, 255], name });
+  if (color && color.startsWith('#')) {
+    await guild.roles.create({ color: `#${color.slice(1)}`, name });
+  } else {
+    await guild.roles.create({ color: 'Random', name });
+  }
 };
 
 const initNewChannel = async (guild: Guild) => {
