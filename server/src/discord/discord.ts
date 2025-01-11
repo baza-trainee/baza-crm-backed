@@ -117,7 +117,7 @@ const sendUserAuthButton = async (userId: string) => {
 };
 
 const createRole = async (guild: Guild, name: string, color: string) => {
-  await guild.roles.create({ color: color ? color : 'Random', name });
+  await guild.roles.create({ color: color ? color : [255, 255, 255], name });
 };
 
 const initNewChannel = async (guild: Guild) => {
