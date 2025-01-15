@@ -55,11 +55,13 @@ export const updateProjectStatus = async (
   if (status === ProjectStatuses.ENDED)
     throw new Error('Finish project not in this route');
   if (status === ProjectStatuses.IN_PROGRESS) {
+    
     const project = await projectRepository.findOne({
       where: { id },
       relations: { projectMember: { user: true } },
     });
     if (!project || !project.discord) return;
+    if(!project.discord) throw new Error('Discord not linked')
     for (const user of project?.projectMember) {
       if (!user.user.discord) return;
       await sendUserInvitations(project.discord, user.user.discord);

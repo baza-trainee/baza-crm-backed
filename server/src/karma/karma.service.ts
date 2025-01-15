@@ -3,6 +3,7 @@ import { sendKarmaReviewLink } from '../discord/discord';
 import { signJWT } from '../jwt/jwt.service';
 import { generateKarmaOtpCode } from '../otp/otp.service';
 import { Project } from '../project/project.entity';
+import { findUserById, saveUser } from '../user/user.service';
 import { Karma } from './karma.entity';
 import { IKarma } from './karma.types';
 
@@ -89,5 +90,22 @@ export const setKarmas = async (
       projectId,
     });
   });
-  karmaRepository.save(data);
+  await karmaRepository.save(data);
+  for(const user of karmaMembersSet){
+    await recalculateKarmaPoints(Number(user))
+  }
+};
+
+export const recalculateKarmaPoints = async (userId: number) => {
+  const karmas = await karmaRepository.find({
+    where: { karmaReceiverId: userId },
+  });
+  let karmaPoints = 0;
+  for (const karma of karmas) {
+    karmaPoints += karma.points;
+  }
+  karmaPoints = Number((karmaPoints / karmas.length).toFixed(1));
+  const user = await findUserById(userId);
+  user.karmaPoints = karmaPoints;
+  await saveUser(user);
 };
