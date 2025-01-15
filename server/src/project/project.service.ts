@@ -1,4 +1,5 @@
 import { AppDataSource } from '../db/data-source';
+import { sendUserInvitations } from '../discord/discord';
 import { sendKarmaReviewLinks } from '../karma/karma.service';
 import { addUserPoints } from '../user/user.service';
 import { Project } from './project.entity';
@@ -53,6 +54,17 @@ export const updateProjectStatus = async (
   await findProjectById(id);
   if (status === ProjectStatuses.ENDED)
     throw new Error('Finish project not in this route');
+  if (status === ProjectStatuses.IN_PROGRESS) {
+    const project = await projectRepository.findOne({
+      where: { id },
+      relations: { projectMember: { user: true } },
+    });
+    if (!project || !project.discord) return;
+    for (const user of project?.projectMember) {
+      if (!user.user.discord) return;
+      await sendUserInvitations(project.discord, user.user.discord);
+    }
+  }
   await projectRepository.update({ id }, { projectStatus: status });
   return await findProjectById(id);
 };

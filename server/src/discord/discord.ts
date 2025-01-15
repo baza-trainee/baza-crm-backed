@@ -183,22 +183,21 @@ export const sendChangePasswordLink = async (userId: string, code: string) => {
   });
 };
 
-// const sendUsersInvitations = async (guildId: string, userId: string) => {
-//   const guildData = (() => {})();
-//   const users = userId;
-//   const guild = await client.guilds.cache.find((el) => el.id == guildId);
-//   const members = await guild.members.fetch();
-//   const user = await client.users.fetch(String(userId));
-//   const channel = await guild.channels.cache.find(
-//     (el) => el.type == ChannelType.GuildText && el.name == 'загальний',
-//   );
-//   const invite = await guild.invites.create(channel, {
-//     maxUses: 1,
-//     unique: true,
-//     maxAge: '3600',
-//   });
-//   await user.send(invite.url);
-// };
+export const sendUserInvitations = async (guildId: string, userId: string) => {
+  const guild = await client.guilds.cache.find((el) => el.id == guildId);
+  if(!guild) return
+  const user = await client.users.fetch(String(userId));
+  const channel = await guild.channels.cache.find(
+    (el) => el.type == ChannelType.GuildText && el.name == 'загальний',
+  );
+  if(!channel) return
+  const invite = await guild.invites.create(channel.id, {
+    maxUses: 1,
+    unique: true,
+    maxAge: 604800,
+  });
+  await user.send(invite.url);
+};
 
 client.on('ready', async () => {});
 
