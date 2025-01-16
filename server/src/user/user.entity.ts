@@ -73,7 +73,7 @@ export class User {
   @Column({ nullable: false, default: 0 })
   projectPoints!: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'decimal' })
   karmaPoints!: number;
 
   @OneToMany(() => Karma, (karma) => karma.karmaGiver)
