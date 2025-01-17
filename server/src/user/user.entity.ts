@@ -81,4 +81,7 @@ export class User {
 
   @OneToMany(() => Karma, (karma) => karma.karmaReceiver)
   karmaGivers!: Karma[];
+
+  @Column({ nullable: true })
+  cv_link?: string;
 }

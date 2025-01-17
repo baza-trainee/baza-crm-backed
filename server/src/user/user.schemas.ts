@@ -15,8 +15,9 @@ export const updateUserSchema = Joi.object<User>().keys({
   lastName: Joi.string().optional(),
   phone: Joi.string().optional(),
   status: Joi.string()
-  .valid(...Object.values(UserStatus))
-  .required(),
+    .valid(...Object.values(UserStatus))
+    .required(),
+  cv_link: Joi.string().uri().optional,
 });
 
 export const linkDiscordSchema = Joi.object().keys({

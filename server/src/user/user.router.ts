@@ -68,6 +68,8 @@ userRouter.get(
  *               status:
  *                 type: string
  *                 enum: [active,working,pause]
+ *               cv_link:
+ *                 type: string
  *             example:
  *               linkedin: linkedinUrl
  *               discordReceiving: false
@@ -77,6 +79,7 @@ userRouter.get(
  *               lastName: Smasher
  *               phone: +380 96 53 43 12 34
  *               status: active
+ *               cv_link: https://docs.google.com/document/d/1kieCyB8Hy2nTeaJ-58MaLVyynKNs6u2AMrsw2V8I3Q4/edit?tab=t.0
  *     security:
  *       - jwtheader: []
  *     responses:
