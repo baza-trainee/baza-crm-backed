@@ -1,4 +1,6 @@
 import { AppDataSource } from '../../db/data-source';
+import { projectApplicationNotify } from '../../discord/discord';
+import { findUserById, getUserDiscord } from '../../user/user.service';
 import { addMemberToProject } from '../member/project-member.service';
 import { findProjectById } from '../project.service';
 import { ProjectAplication } from './project-aplication.entity';
@@ -47,6 +49,7 @@ export const getProjectAplications = async (projectId: number) => {
 export const resolveProjectAplication = async (
   projectAplicationResolveDto: IProjectAplicationResolveDto,
 ) => {
+  const project = await findProjectById(projectAplicationResolveDto.projectId);
   const aplication = await projectAplicationRepositroy.findOne({
     where: { id: projectAplicationResolveDto.aplicationId },
   });
@@ -60,7 +63,11 @@ export const resolveProjectAplication = async (
       tagId: aplication.tagId,
       userId: aplication.userId,
     });
-    // TODO add message
+    await projectApplicationNotify(
+      await getUserDiscord(aplication.userId),
+      project.name,
+      true,
+    );
   }
   await projectAplicationRepositroy.save(aplication);
 };

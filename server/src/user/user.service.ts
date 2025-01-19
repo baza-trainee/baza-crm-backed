@@ -104,6 +104,15 @@ export const addUserPoints = async (project: Project) => {
   await userRepository.save(users);
 };
 
+export const getUserDiscord = async (user: User | number): Promise<string> => {
+  if (typeof user === 'number') {
+    const findedUser = await findUserById(user);
+    return String(findedUser.discord);
+  } else {
+    return String(user.discord);
+  }
+};
+
 export const saveUser = async (user: User) => {
   await userRepository.save(user);
 };

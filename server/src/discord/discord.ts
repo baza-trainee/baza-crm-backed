@@ -50,29 +50,6 @@ const voiceChannels = [
   'Кімната 4',
 ];
 
-/* const addRolesToUser = async (
-  roleName: string,
-  userId: string,
-  guildId: string,
-) => {
-  const guild = await client.guilds.cache.find((el) => el.id == guildId);
-  if (!guild) {
-    throw new Error('Guild not found');
-  }
-  const role = guild.roles.cache.find(
-    (el) => el.name.toLowerCase() == roleName.toLowerCase(),
-  );
-  if (!role) {
-    throw new Error('Role not found');
-  }
-  const users = await guild.members.fetch();
-  const user = await users.find((el) => el.user.id == userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
-  await user.roles.add(role);
-}; */
-
 const kickUser = async (userId: string, guildId: string) => {
   const guild = await client.guilds.cache.find((el) => el.id == guildId);
   if (!guild) {
@@ -185,18 +162,33 @@ export const sendChangePasswordLink = async (userId: string, code: string) => {
 
 export const sendUserInvitations = async (guildId: string, userId: string) => {
   const guild = await client.guilds.cache.find((el) => el.id == guildId);
-  if(!guild) return
+  if (!guild) return;
   const user = await client.users.fetch(String(userId));
   const channel = await guild.channels.cache.find(
     (el) => el.type == ChannelType.GuildText && el.name == 'загальний',
   );
-  if(!channel) return
+  if (!channel) return;
   const invite = await guild.invites.create(channel.id, {
     maxUses: 1,
     unique: true,
     maxAge: 604800,
   });
   await user.send(invite.url);
+};
+
+export const projectApplicationNotify = async (
+  userId: string,
+  projectName: string,
+  isAccepted: boolean,
+) => {
+  try {
+    const user = await client.users.fetch(String(userId));
+    await user.send(
+      `Ваша заявка на проект "${projectName}" ${isAccepted ? 'прийнята' : 'відхилена'}`,
+    );
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 client.on('ready', async () => {});
